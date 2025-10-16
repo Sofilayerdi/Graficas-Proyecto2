@@ -57,8 +57,8 @@ stem = Material(diffuse=[0.3, 0.2, 0.05], spec=0.2, ks=0.05, matType=OPAQUE)
 rend.scene.append(Plane(position=[0, -3, 0], normal=[0, 1, 0], material=table))
 
 rend.scene.append(Sphere(position=[-1.7, -1, -10], radius=1.5, material=bottleGold))
-rend.scene.append(Cone(position=[-1.7, 1.5, -10], height=5, radius=1.2, material=bottleGreen))
-rend.scene.append(Toroide(position=[-1.7, 3.6, -10], R=0.2, r=0.16, material= corcho))
+rend.scene.append(Cone(position=[-1.7, 1.5, -10], height=6, radius=1.4, material=bottleGreen))
+rend.scene.append(Toroide(position=[-1.7, 3.8, -10], R=0.2, r=0.16, material= corcho))
 
 rend.scene.append(Toroide(position=[-0.2, -1.4, -8], R=0.3, r=0.75, material= apple))
 rend.scene.append(Cilindro(position=[-0.2, -1, -8], height=1.7, radius=0.05, material= stem))
