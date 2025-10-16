@@ -408,11 +408,7 @@ class Elipsoide(Shape):
 
 class Toroide(Shape):
     def __init__(self, position, R, r, material):
-        """
-        Toroide centrado en 'position' con radio mayor R y radio menor r.
-        - R: distancia desde el centro del toroide hasta el centro del tubo.
-        - r: radio del tubo.
-        """
+       
         super().__init__(position, material)
         self.R = R
         self.r = r
@@ -464,10 +460,17 @@ class Toroide(Shape):
             return None
         normal /= norm_len
 
+        theta = np.arctan2(z, x) 
+        local_r = np.sqrt(x**2 + z**2) - self.R
+        phi = np.arctan2(y, local_r) 
+
+        u = (theta + np.pi) / (2 * np.pi)
+        v = (phi + np.pi) / (2 * np.pi)
+
         return Intercept(point=P,
                          normal=normal,
                          distance=t,
-                         texCoords=None,
+                         texCoords=[u, v],
                          rayDirection=dir,
                          obj=self)
     
@@ -478,19 +481,16 @@ class Cone(Shape):
         self.radius = radius
         self.type = "Cone"
 
-        # Calculamos la posición del vértice y de la base
         self.vertex = np.array([position[0], position[1] + height / 2, position[2]])
         self.base_center = np.array([position[0], position[1] - height / 2, position[2]])
-        self.angle = np.arctan(radius / height)  # ángulo del cono
+        self.angle = np.arctan(radius / height)  
 
-        # Base del cono (un disco)
         self.base_disk = Disk(self.base_center, [0, -1, 0], radius, material)
 
     def ray_intersect(self, orig, dir):
         orig = np.array(orig)
         dir = np.array(dir)
 
-        # Vector desde el vértice hacia el rayo
         co = orig - self.vertex
         cos2 = np.cos(self.angle) ** 2
         sin2 = np.sin(self.angle) ** 2
@@ -498,7 +498,6 @@ class Cone(Shape):
         dx, dy, dz = dir
         ox, oy, oz = co
 
-        # Ecuación cuadrática para intersección con la superficie del cono
         A = dx**2 + dz**2 - (dy**2 * (self.radius**2 / self.height**2))
         B = 2 * (ox * dx + oz * dz - (oy * dy * (self.radius**2 / self.height**2)))
         C = ox**2 + oz**2 - (oy**2 * (self.radius**2 / self.height**2))
@@ -516,16 +515,14 @@ class Cone(Shape):
             if ti > 1e-6:
                 P = orig + dir * ti
                 y = P[1]
-                if self.base_center[1] <= y <= self.vertex[1]:  # dentro del rango del cono
+                if self.base_center[1] <= y <= self.vertex[1]: 
                     t = ti
                     break
 
         if t is None:
-            # Intentar intersección con la base
             return self.base_disk.ray_intersect(orig, dir)
 
         P = orig + dir * t
-        # Normal del cono
         v = P - self.vertex
         v_proj = np.array([v[0], 0, v[2]])
         n = np.array([v[0], np.linalg.norm(v_proj) * (self.radius / self.height), v[2]])
